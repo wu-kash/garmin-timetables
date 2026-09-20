@@ -236,8 +236,7 @@
     watch: { field: "Watch", placeholder: "Forerunner 970" },
     departures: { field: "City and stop", placeholder: "Brno — Česká" },
     app: { field: "Watch", placeholder: "fēnix 7" },
-    page: { field: "Summary", placeholder: "Venu 3 screenshots are from the old layout" },
-    other: { field: "Subject", placeholder: "In a few words" }
+    other: { field: "Subject", placeholder: "" }
   };
 
   function setStatus(text, kind) {

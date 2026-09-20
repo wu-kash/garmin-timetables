@@ -126,8 +126,15 @@ main { max-width:1080px; margin:0 auto; padding:26px 16px 56px; }
 .city-focus:hover { border-color:var(--line-lit); border-left-color:var(--lit);
   background:var(--panel-2); }
 .city-name {
+  display:flex; align-items:center; gap:9px;
   font-family:var(--mono); font-weight:700; letter-spacing:.06em;
   text-transform:uppercase; color:var(--lit); font-size:14px;
+}
+.flag {
+  width:21px; height:16px; flex:0 0 auto; border-radius:2px;
+  /* The Austrian and Polish flags are white-edged; without a rim they bleed into
+     the card on this palette. */
+  box-shadow:0 0 0 1px rgba(255,255,255,.18);
 }
 .city-meta { color:var(--muted); font-size:13px; }
 
