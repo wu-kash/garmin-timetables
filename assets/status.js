@@ -216,7 +216,6 @@
   var detailsLabel = document.getElementById("request-details-label");
   var contact = document.getElementById("request-contact");
   var title = document.getElementById("request-title");
-  var lead = document.getElementById("request-lead");
   var status = document.getElementById("request-status");
   var submit = document.getElementById("request-submit");
   var cancel = document.getElementById("request-cancel");
@@ -230,30 +229,15 @@
     report: { title: "Report a problem", details: "What happened" }
   };
 
-  // Per kind: the one thing the form insists on, how to ask for it, and a line of
-  // explanation where one earns its place. The keys are the backend's own
-  // (src/report.mjs); the option texts live in the markup.
+  // Per kind: the one thing the form insists on, and how to ask for it. The keys are
+  // the backend's own (src/report.mjs); the option texts live in the markup.
   var KINDS = {
     city: { field: "City", placeholder: "Ostrava, Czechia" },
     watch: { field: "Watch", placeholder: "Forerunner 970" },
-    departures: {
-      field: "City and stop", placeholder: "Brno — Česká",
-      lead: "Which stop, and what did the board show that it should not have?"
-    },
-    app: {
-      field: "Watch", placeholder: "fēnix 7",
-      lead: "What does the widget do on your watch, and on which screen? A watch that "
-        + "shows nothing at all is worth reporting even if you cannot say why."
-    },
-    page: {
-      field: "Summary", placeholder: "Venu 3 screenshots are from the old layout",
-      lead: "A wrong screenshot, a missing watch, a city listed here that the app does "
-        + "not actually find — anything on this page."
-    },
-    other: {
-      field: "Subject", placeholder: "In a few words",
-      lead: "Anything that does not fit the choices above."
-    }
+    departures: { field: "City and stop", placeholder: "Brno — Česká" },
+    app: { field: "Watch", placeholder: "fēnix 7" },
+    page: { field: "Summary", placeholder: "Venu 3 screenshots are from the old layout" },
+    other: { field: "Subject", placeholder: "In a few words" }
   };
 
   function setStatus(text, kind) {
@@ -272,9 +256,6 @@
     var spec = KINDS[currentKind()] || KINDS.other;
     subjectLabel.textContent = spec.field;
     subject.placeholder = spec.placeholder;
-    // A kind that needs no explaining leaves no empty gap above the field.
-    lead.textContent = spec.lead || "";
-    lead.hidden = !spec.lead;
   }
 
   function openModal(mode) {

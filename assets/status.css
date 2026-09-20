@@ -328,9 +328,6 @@ table.devices td { padding:12px 14px; vertical-align:middle; }
 .modal-box select:focus-visible {
   outline:2px solid var(--accent); outline-offset:1px;
 }
-/* The chooser sets up everything under it, so the sentence explaining the choice
-   belongs with it rather than above the first field. */
-#request-lead { margin-top:10px; }
 .modal-status {
   margin:14px 0 2px; padding:10px 12px; border-radius:10px; font-size:13px;
   border:1px solid var(--line-lit); background:var(--panel-2); color:var(--ink);
