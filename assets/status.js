@@ -337,17 +337,7 @@
         }
         // The form is done: leaving it on screen invites a second identical issue.
         form.hidden = true;
-        setStatus("Thank you — this is now #" + result.body.number
-          + " on the issue tracker.", "ok");
-        if (result.body.url) {
-          var link = document.createElement("a");
-          link.href = result.body.url;
-          link.target = "_blank";
-          link.rel = "noopener";
-          link.textContent = "Open #" + result.body.number;
-          status.appendChild(document.createElement("br"));
-          status.appendChild(link);
-        }
+        setStatus("Thank you — your message has been sent.", "ok");
         subject.value = details.value = contact.value = "";
       }).catch(function (error) {
         // A rejected fetch means the network failed, not that the server said no:
