@@ -94,8 +94,8 @@
       var at = [city.lat, city.lon];
       cityBounds.push(at);
       // The municipal boundary, drawn to make the city recognisable. It is not a
-      // coverage edge: the backend resolves a fix to a city by radiusKm, which reaches
-      // further out than this.
+      // coverage edge: the backend resolves a fix to a city by nearness to its stops,
+      // which for a regional feed reaches far beyond this.
       if (city.outline) {
         shapes[city.name] = L.polygon(city.outline, {
           weight: 1.5, opacity: .95, color: "#ff9616",
