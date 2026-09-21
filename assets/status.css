@@ -196,7 +196,11 @@ main { max-width:1080px; margin:0 auto; padding:26px 16px 56px; }
 table.devices {
   width:100%; border-collapse:collapse; background:var(--panel);
   border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  table-layout:fixed;
 }
+/* Fixed so every family table lines its screenshot column up at the same x;
+   sized to fit a full row of four shots. */
+table.devices thead th:last-child { width:420px; }
 table.devices thead th {
   text-align:left; font-family:var(--mono); font-size:11px;
   text-transform:uppercase; letter-spacing:.12em;
