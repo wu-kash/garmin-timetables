@@ -36,8 +36,13 @@
   var map = null;
   var markers = {};
   var shapes = {};
+  var outlines = {};
   var stopLayer = null;
+  var stopRenderer = null;
   var stopsShown = null;
+  var selected = null;
+  var OUTLINE = { weight: 1.5, fillOpacity: .14 };
+  var OUTLINE_SELECTED = { weight: 2.5, fillOpacity: .26 };
   var cityBounds = [];
   var cities = window.CITIES || [];
   var mapEl = document.getElementById("map");
@@ -91,16 +96,23 @@
         + "and the list below has them all.");
     });
 
+    // The stops sit above the outlines but take no clicks: a canvas over the whole map
+    // would otherwise swallow every click meant for the outline beneath it.
+    var stopPane = map.createPane("stops");
+    stopPane.style.zIndex = 450;
+    stopPane.style.pointerEvents = "none";
+    stopRenderer = L.canvas({ pane: "stops", padding: .5 });
+
     cities.forEach(function (city) {
       if (city.lat == null || city.lon == null) return;
       var at = [city.lat, city.lon];
       cityBounds.push(at);
       if (city.outline) {
-        L.polygon(city.outline.ring, {
-          weight: 1.5, opacity: .95, color: "#ff9616",
-          fillColor: "#ff9616", fillOpacity: .14, interactive: false
-        }).addTo(map);
-        shapes[city.name] = L.latLngBounds(city.outline.focus);
+        outlines[city.id] = L.polygon(city.outline.ring, L.extend({
+          opacity: .95, color: "#ff9616", fillColor: "#ff9616"
+        }, OUTLINE)).addTo(map);
+        outlines[city.id].on("click", function () { selectCity(city, false); });
+        shapes[city.id] = L.latLngBounds(city.outline.focus);
       }
       var marker = L.marker(at, {
         icon: L.divIcon({
@@ -111,6 +123,7 @@
       }).addTo(map);
       var stops = city.stations ? groupDigits(city.stations) + " stops" : "covered";
       marker.bindPopup("<strong>" + city.name + "</strong><br>" + stops);
+      marker.on("click", function () { selectCity(city, false); });
       markers[city.name] = marker;
     });
 
@@ -130,11 +143,10 @@
       .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function (flat) {
         if (stopsShown !== id) return;
-        var renderer = L.canvas({ padding: .5 });
         var dots = [];
         for (var i = 0; i + 1 < flat.length; i += 2) {
           dots.push(L.circleMarker([flat[i], flat[i + 1]], {
-            renderer: renderer, radius: 2, stroke: false,
+            renderer: stopRenderer, radius: 2, stroke: false,
             fillColor: "#ffd08a", fillOpacity: .85, interactive: false
           }));
         }
@@ -145,21 +157,37 @@
       });
   }
 
-  document.querySelectorAll(".city-row").forEach(function (button) {
-    button.addEventListener("click", function () {
-      var li = button.closest(".city");
-      var name = button.querySelector(".city-name").textContent.trim();
-      if (!map || !li) return;
+  // Highlights the city and draws its stops. The map moves only when asked to, or when
+  // the city was not already the selected one: a second click on the outline someone
+  // has zoomed into must not yank the view back out.
+  function selectCity(city, focus) {
+    if (!map) return;
+    if (focus || selected !== city.id) {
       // Frame the city's metro where we have one: a fixed zoom that suits Brno leaves
       // Greater London running off every edge, and framing the whole outline of a
       // state-wide feed would show half of Western Australia.
-      if (shapes[name]) {
-        map.fitBounds(shapes[name], { padding: [30, 30] });
+      if (shapes[city.id]) {
+        map.fitBounds(shapes[city.id], { padding: [30, 30] });
       } else {
-        map.setView([parseFloat(li.dataset.lat), parseFloat(li.dataset.lon)], 11);
+        map.setView([city.lat, city.lon], 11);
       }
-      if (markers[name]) markers[name].openPopup();
-      showStops(li.dataset.id);
+    }
+    if (selected && outlines[selected]) outlines[selected].setStyle(OUTLINE);
+    if (outlines[city.id]) outlines[city.id].setStyle(OUTLINE_SELECTED);
+    selected = city.id;
+    showStops(city.id);
+  }
+
+  var citiesById = {};
+  cities.forEach(function (city) { citiesById[city.id] = city; });
+
+  document.querySelectorAll(".city-row").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var li = button.closest(".city");
+      var city = li && citiesById[li.dataset.id];
+      if (!city) return;
+      selectCity(city, true);
+      if (markers[city.name]) markers[city.name].openPopup();
       mapEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   });
