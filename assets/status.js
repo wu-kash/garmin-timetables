@@ -71,11 +71,14 @@
       return;
     }
     map = L.map(mapEl, { scrollWheelZoom: false });
+    mapEl.addEventListener("click", function () { map.scrollWheelZoom.enable(); });
+    mapEl.addEventListener("mouseleave", function () { map.scrollWheelZoom.disable(); });
     // openstreetmap.org's own tiles: no key, no account, no third-party service. Their
     // usage policy is the constraint, so this layer is deliberately frugal — a browsing
     // depth no deeper than a city (maxZoom), tiles fetched only once panning settles
-    // (updateWhenIdle), and a small off-screen buffer. Scroll-zoom is off for the same
-    // reason: a wheel over the map would otherwise walk whole zoom levels of tiles.
+    // (updateWhenIdle), and a small off-screen buffer. Scroll-zoom waits for a click for
+    // the same reason: a page scroll passing over the map would otherwise walk whole
+    // zoom levels of tiles.
     //
     // The policy identifies websites by Referer, which a page opened from file:// does
     // not send — that request is refused with "Access blocked". Serve the directory over
