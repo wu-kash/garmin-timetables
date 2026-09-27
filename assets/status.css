@@ -115,16 +115,9 @@ main { max-width:1080px; margin:0 auto; padding:26px 16px 56px; }
 .city-list {
   list-style:none; padding:0; margin:16px 0 0;
   display:grid; gap:8px; grid-template-columns:repeat(auto-fill, minmax(215px, 1fr));
+  /* An open card grows on its own; its row-mates keep their height. */
+  align-items:start;
 }
-.city-focus {
-  appearance:none; font:inherit; text-align:left; cursor:pointer; width:100%;
-  display:flex; flex-direction:column; gap:2px;
-  background:var(--panel); color:inherit;
-  border:1px solid var(--line); border-left:3px solid var(--accent);
-  border-radius:10px; padding:11px 14px;
-}
-.city-focus:hover { border-color:var(--line-lit); border-left-color:var(--lit);
-  background:var(--panel-2); }
 .city-name {
   display:flex; align-items:center; gap:9px;
   font-family:var(--mono); font-weight:700; letter-spacing:.06em;
@@ -137,6 +130,33 @@ main { max-width:1080px; margin:0 auto; padding:26px 16px 56px; }
   box-shadow:0 0 0 1px rgba(255,255,255,.18);
 }
 .city-meta { color:var(--muted); font-size:13px; }
+
+/* One card per country, flag and name, that opens to a row per city. */
+.country details {
+  background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:10px;
+}
+.country details[open] { border-left-color:var(--lit); }
+.country-head {
+  list-style:none; cursor:pointer; position:relative;
+  padding:11px 36px 11px 14px;
+}
+.country-head::-webkit-details-marker { display:none; }
+.country-head::after {
+  content:"▸"; position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  color:var(--muted); transition:transform .15s;
+}
+.country details[open] > .country-head::after { transform:translateY(-50%) rotate(90deg); }
+.country-head:hover { background:var(--panel-2); border-radius:9px; }
+.country-cities { list-style:none; margin:0; padding:0 0 6px; }
+.city-row {
+  appearance:none; font:inherit; text-align:left; cursor:pointer; width:100%;
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  background:none; color:inherit;
+  border:0; border-top:1px solid var(--line); padding:8px 14px 8px 44px;
+}
+.city-row:hover { background:var(--panel-2); }
+.city-row .city-name { font-size:13px; }
 
 /* --- watches --------------------------------------------------------------- */
 .filter { position:relative; display:block; margin:0 0 6px; max-width:340px; }

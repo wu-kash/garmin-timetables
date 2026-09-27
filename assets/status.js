@@ -93,14 +93,12 @@
       if (city.lat == null || city.lon == null) return;
       var at = [city.lat, city.lon];
       cityBounds.push(at);
-      // The municipal boundary, drawn to make the city recognisable. It is not a
-      // coverage edge: the backend resolves a fix to a city by nearness to its stops,
-      // which for a regional feed reaches far beyond this.
       if (city.outline) {
-        shapes[city.name] = L.polygon(city.outline, {
+        L.polygon(city.outline.ring, {
           weight: 1.5, opacity: .95, color: "#ff9616",
           fillColor: "#ff9616", fillOpacity: .14, interactive: false
         }).addTo(map);
+        shapes[city.name] = L.latLngBounds(city.outline.focus);
       }
       var marker = L.marker(at, {
         icon: L.divIcon({
@@ -119,20 +117,33 @@
 
   buildMap();
 
-  document.querySelectorAll(".city-focus").forEach(function (button) {
+  document.querySelectorAll(".city-row").forEach(function (button) {
     button.addEventListener("click", function () {
       var li = button.closest(".city");
       var name = button.querySelector(".city-name").textContent.trim();
       if (!map || !li) return;
-      // Frame the city's own boundary where we have one: a fixed zoom that suits Brno
-      // leaves Greater London running off every edge.
+      // Frame the city's metro where we have one: a fixed zoom that suits Brno leaves
+      // Greater London running off every edge, and framing the whole outline of a
+      // state-wide feed would show half of Western Australia.
       if (shapes[name]) {
-        map.fitBounds(shapes[name].getBounds(), { padding: [30, 30] });
+        map.fitBounds(shapes[name], { padding: [30, 30] });
       } else {
         map.setView([parseFloat(li.dataset.lat), parseFloat(li.dataset.lon)], 11);
       }
       if (markers[name]) markers[name].openPopup();
       mapEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  });
+
+  document.querySelectorAll(".country details").forEach(function (details) {
+    details.addEventListener("toggle", function () {
+      if (!details.open || !map) return;
+      var pins = [];
+      details.querySelectorAll(".city-name").forEach(function (el) {
+        var marker = markers[el.textContent.trim()];
+        if (marker) pins.push(marker.getLatLng());
+      });
+      if (pins.length) map.fitBounds(pins, { padding: [42, 42], maxZoom: 9 });
     });
   });
 
