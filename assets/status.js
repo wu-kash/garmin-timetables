@@ -36,6 +36,8 @@
   var map = null;
   var markers = {};
   var shapes = {};
+  var stopLayer = null;
+  var stopsShown = null;
   var cityBounds = [];
   var cities = window.CITIES || [];
   var mapEl = document.getElementById("map");
@@ -117,6 +119,32 @@
 
   buildMap();
 
+  // One city's stops at a time, drawn on canvas: Sydney alone is 36k dots, which as
+  // DOM markers would stall the page.
+  function showStops(id) {
+    if (!map || stopsShown === id) return;
+    if (stopLayer) map.removeLayer(stopLayer);
+    stopLayer = null;
+    stopsShown = id;
+    fetch("assets/stops/" + encodeURIComponent(id) + ".json")
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (flat) {
+        if (stopsShown !== id) return;
+        var renderer = L.canvas({ padding: .5 });
+        var dots = [];
+        for (var i = 0; i + 1 < flat.length; i += 2) {
+          dots.push(L.circleMarker([flat[i], flat[i + 1]], {
+            renderer: renderer, radius: 2, stroke: false,
+            fillColor: "#ffd08a", fillOpacity: .85, interactive: false
+          }));
+        }
+        stopLayer = L.layerGroup(dots).addTo(map);
+      })
+      .catch(function () {
+        if (stopsShown === id) stopsShown = null;
+      });
+  }
+
   document.querySelectorAll(".city-row").forEach(function (button) {
     button.addEventListener("click", function () {
       var li = button.closest(".city");
@@ -131,6 +159,7 @@
         map.setView([parseFloat(li.dataset.lat), parseFloat(li.dataset.lon)], 11);
       }
       if (markers[name]) markers[name].openPopup();
+      showStops(li.dataset.id);
       mapEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   });
