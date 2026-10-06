@@ -48,8 +48,8 @@
   var mapEl = document.getElementById("map");
   var mapHint = document.getElementById("map-hint");
 
-  // Space-grouped, matching the counts the generator renders into the city cards;
-  // toLocaleString() would follow the viewer's locale and disagree with them.
+  // Space-grouped so the list and the map popups agree regardless of the viewer's
+  // locale, which toLocaleString() would follow.
   function groupDigits(n) {
     return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
@@ -124,8 +124,7 @@
         }),
         title: city.name
       }).addTo(map);
-      var stops = city.stations ? groupDigits(city.stations) + " stops" : "covered";
-      marker.bindPopup("<strong>" + city.name + "</strong><br>" + stops);
+      marker.bindPopup(cityPopup(city, null));
       marker.on("click", function () { selectCity(city, false); });
       markers[city.name] = marker;
     });
@@ -133,7 +132,38 @@
     fitCities();
   }
 
+  function cityPopup(city, stops) {
+    return "<strong>" + city.name + "</strong><br>"
+      + (stops ? groupDigits(stops) + " stops" : "covered");
+  }
+
   buildMap();
+
+  // Fetched live rather than baked in at build time: the counts move a little with
+  // every feed refresh, and committing that churn daily was all the rebuild did.
+  // Unreachable, the rows simply carry no count.
+  function showStopCounts(byCountry) {
+    var counts = {};
+    Object.keys(byCountry || {}).forEach(function (country) {
+      (byCountry[country] || []).forEach(function (c) {
+        if (c && c.id && c.n) counts[c.id] = c.n;
+      });
+    });
+    document.querySelectorAll(".city").forEach(function (li) {
+      var meta = li.querySelector(".city-meta");
+      var n = counts[li.dataset.id];
+      if (meta && n) meta.textContent = groupDigits(n) + " stops";
+    });
+    cities.forEach(function (city) {
+      var marker = markers[city.name];
+      if (marker && counts[city.id]) marker.setPopupContent(cityPopup(city, counts[city.id]));
+    });
+  }
+
+  fetch((window.API_BASE || "").replace(/\/$/, "") + "/cities")
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(showStopCounts)
+    .catch(function () {});
 
   // One city's stops at a time, drawn on canvas: Sydney alone is 36k dots, which as
   // DOM markers would stall the page.
