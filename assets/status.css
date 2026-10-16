@@ -12,7 +12,7 @@
   --line-lit:#4a3318;
   --accent:#f5821f;      /* orange app card */
   --lit:#ff9616;         /* lit dot */
-  --ok:#3ecf7e;
+  --alert:#ff6a4d;      /* red LED: the board's colour for trouble */
   --shot-bg:#000;
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --glow:0 0 18px rgba(255,150,22,.18);
@@ -365,8 +365,16 @@ table.devices td { padding:12px 14px; vertical-align:middle; }
   border:1px solid var(--line-lit); background:var(--panel-2); color:var(--ink);
 }
 .modal-status[hidden] { display:none; }
-.modal-status.is-error { border-color:#7a2f18; color:#ffb59a; }
-.modal-status.is-ok { border-color:var(--ok); color:var(--ok); }
+.modal-status.is-ok, .modal-status.is-error {
+  border-color:color-mix(in srgb, currentColor 45%, transparent);
+  background:color-mix(in srgb, currentColor 8%, var(--panel));
+}
+.modal-status.is-ok { color:var(--lit); box-shadow:var(--glow); }
+.modal-status.is-error { color:var(--alert); }
+.modal-status.is-ok::before, .modal-status.is-error::before {
+  content:""; display:inline-block; width:7px; height:7px; margin:0 9px 1px 1px;
+  border-radius:50%; background:currentColor; box-shadow:0 0 6px currentColor;
+}
 .modal-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:18px; }
 .btn-primary, .btn-ghost {
   appearance:none; cursor:pointer; font:inherit;
