@@ -303,6 +303,38 @@ table.devices td { padding:12px 14px; vertical-align:middle; }
 /* --- request / report ------------------------------------------------------ */
 /* Top right of the board, beside the title, on every tab. */
 .head-actions { margin-left:auto; display:flex; gap:8px; }
+.store-row { max-width:1080px; margin:16px auto 0; padding:0 16px; }
+.store-link {
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  text-decoration:none; color:var(--ink);
+  padding:11px 12px 11px 16px; border-radius:12px;
+  border:1px solid var(--line-lit);
+  background:
+    linear-gradient(90deg, rgba(245,130,31,.2), rgba(245,130,31,.05) 46%, transparent),
+    var(--panel);
+  box-shadow:var(--glow);
+}
+.store-link:hover {
+  border-color:var(--accent);
+  background:
+    linear-gradient(90deg, rgba(255,150,22,.28), rgba(255,150,22,.07) 50%, transparent),
+    var(--panel-2);
+}
+.store-link:focus-visible { outline:2px solid var(--lit); outline-offset:2px; }
+.store-kicker {
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--lit);
+}
+.store-title {
+  font-family:var(--mono); font-size:13.5px; letter-spacing:.03em;
+}
+.store-go {
+  margin-left:auto;
+  font-family:var(--mono); font-size:12px; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase;
+  padding:7px 14px; border-radius:8px;
+  background:var(--accent); color:#1a1207;
+}
 .head-button {
   appearance:none; cursor:pointer; font:inherit;
   font-family:var(--mono); font-size:12.5px; font-weight:700;
@@ -401,6 +433,9 @@ table.devices td { padding:12px 14px; vertical-align:middle; }
   .shots { margin-top:11px; }
   .head-actions { width:100%; }
   .head-button { flex:1; padding:9px 10px; }
+  .store-row { margin-top:14px; }
+  .store-link { flex-direction:column; align-items:flex-start; gap:8px; }
+  .store-go { margin-left:0; }
   .modal { padding:12px; }
   .modal-box { padding:20px 16px 16px; }
   .modal-actions button { flex:1; }
