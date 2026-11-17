@@ -382,7 +382,7 @@
     if (modalReturn) modalReturn.focus();
   }
 
-  document.querySelectorAll(".head-button").forEach(function (button) {
+  document.querySelectorAll(".head-button[data-mode]").forEach(function (button) {
     button.addEventListener("click", function () {
       modalReturn = button;
       openModal(button.dataset.mode);
